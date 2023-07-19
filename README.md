@@ -387,25 +387,3 @@ builder.Logging.AddFile($"{Directory.GetCurrentDirectory()}\\LogFile\\log.txt", 
     }
 ```
 
-* ApplicationDbContext Ekleme:
-
-
-
-
-
-* Controllerıma Put endpointimi ekledim.
-
-
-
-```C#
-
-
-        [HttpPost]
-        public IActionResult GetAllProducts([FromBody] Product product) //requestin bodysinden gelecek
-        {
-
-            _logger.LogWarning("Product has been created"); //warning seviyesinde bir  kaynak oluşturduğunu söylesin
-            return StatusCode(201); //Created
-        }
-
-```
