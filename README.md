@@ -312,3 +312,100 @@ builder.Logging.AddFile($"{Directory.GetCurrentDirectory()}\\LogFile\\log.txt", 
 builder.Logging.AddFile($"{Directory.GetCurrentDirectory()}\\LogFile\\log.txt", LogLevel.Warning);
 ```
 * Projeyi çalıştırdığımda otomatik olarak LogFile oluştu ve loglar oraya yazıldı. 
+
+
+# 📁 [Book](https://github.com/gulsunciftci/AspDotNetCoreWebApi/tree/main/AspDotNetCoreWebApi/Book)
+
+* Book isminde bir class oluşturdum ve propertylerini ekledim.
+
+```C#
+    public class Book
+    {
+        public int Id { get; set;  }
+        public string Title { get; set; }
+        public decimal Price { get; set; }
+    }
+```
+* Books isminde bir controller ekledim.
+```C#
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BooksController : ControllerBase
+    {
+    }
+```
+
+* Bir Data klasörü oluşturdum ve içerisine static ApplicationContext class'ı ekledim.
+
+* Static Kavramı:
+İçinde buluduğu sınıftan nesne oluşturulmadan veya hiç bir nesneye referans olmadan kullanılabilen üyeler static olarak nitelendirilir. Metotlar ve alanlar static olarak tanımlanabilir. Static olma durumunun en bilinen örneği Main() metodudur. Static sınıfın static üyeleri olur.
+
+```C#
+   public static class ApplicationContext
+    {
+        public static List<Book> Books { get; set; }
+        static  ApplicationContext()
+        {
+            Books = new List<Book>() //static liste
+            {
+                new Book(){Id=1, Title="Karagöz ve Hacivat", Price=75},
+                new Book(){Id=2, Title="Mesnevi", Price=150},
+                new Book(){Id=3, Title="Dede Korkut", Price=75}
+            };
+
+        }
+    }
+```
+
+* İki farklı endpoint tanımladım
+
+```C#
+    public class BooksController : ControllerBase
+    {
+        [HttpGet]
+        public IActionResult GetAllBooks()
+        {
+            var books = ApplicationContext.Books;
+            return Ok(books);
+        }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetOneBook([FromRoute(Name ="id")]int id) //Routedan gelecek
+        {
+            var book = ApplicationContext
+                .Books
+                .Where(b => b.Id.Equals(id))
+                .SingleOrDefault(); //Tek bir kayıt yada default değerini dön
+            
+            if(book is null) //kitap null ise
+            {
+                return NotFound(); //404
+            }
+
+            return Ok(book);
+        }
+    }
+```
+
+* ApplicationDbContext Ekleme:
+
+
+
+
+
+* Controllerıma Put endpointimi ekledim.
+
+
+
+```C#
+
+
+        [HttpPost]
+        public IActionResult GetAllProducts([FromBody] Product product) //requestin bodysinden gelecek
+        {
+
+            _logger.LogWarning("Product has been created"); //warning seviyesinde bir  kaynak oluşturduğunu söylesin
+            return StatusCode(201); //Created
+        }
+
+```
