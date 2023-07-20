@@ -386,4 +386,112 @@ builder.Logging.AddFile($"{Directory.GetCurrentDirectory()}\\LogFile\\log.txt", 
         }
     }
 ```
+* Post endpointimi ekledim. 
 
+```C#
+        [HttpPost]
+        public  IActionResult CreateOneBook([FromBody]Book book)
+        {
+            try
+            {
+                if(book is null) //kitap yoksa BadRequest döndür.
+                {
+                    return BadRequest(); //400
+                }
+                ApplicationContext.Books.Add(book);
+                return StatusCode(201,book);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+```
+* Put endpointimi yazdım.
+
+```C#
+       [HttpPut("{id:int}")]
+        public IActionResult UpdateOneBook([FromRoute(Name ="id")]int id,Book book)
+        {
+            var entity = ApplicationContext.Books.Find(b => b.Id.Equals(id));
+            if(entity is null)
+            {
+                return NotFound(); //404
+            }
+
+            if (id != book.Id)
+            {
+                return BadRequest(); //400
+            }
+
+            ApplicationContext.Books.Remove(entity);
+            book.Id = entity.Id;
+            ApplicationContext.Books.Add(book);
+            return Ok(book);
+
+        }
+```
+* Delete endpointimi yazdım.
+
+```C#
+      [HttpDelete]
+        public IActionResult DeleteAllBooks()
+        {
+            ApplicationContext.Books.Clear(); //bütün listeyi temizledim.
+            return NoContent(); //204
+
+        }
+        [HttpDelete("{id:int]")]
+        public IActionResult DeleteOneBook([FromRoute(Name ="id")]int id)
+        {
+            var entity = ApplicationContext
+                .Books
+                .Find(b => b.Equals(id));
+            if(entity is null)
+            {
+                return NotFound(new
+                {
+                    StatusCode=404,
+                    message=$"Book with id:{id} could not found"
+                }); //404
+            }
+
+            ApplicationContext.Books.Remove(entity);
+            return NoContent();
+        }
+```
+
+* Patch endpointini yazdım.
+
+- İlk olarak şu iki paketi yükledim:
+1) Microsoft.AspNetCore.JsonPatch
+2) Microsoft.AspNetCore.Mvc.NewtonsoftJson
+
+* Consoldan paket indirmek için komutlar: 
+- Install-Package Microsoft.AspNetCore.JsonPatch
+- Install-Package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+* Program.cs'e şu kod satırlarını ekledim:
+```C#
+     services.AddControllers()
+                .AddNewtonsoftJson();    
+```
+* Put metodunun Patch'den farkı:
+Not: PATCH metodu, bir kaynağın küçük bir bölümünü günceller. Örneğin, PUT isteğini kullanarak bir kaynağı güncellerseniz ve tüm alanları ayarlamazsanız, boş bıraktığınız alanlardaki verileri kaybetme riskiniz vardır. PATCH isteği, yalnızca gönderilen verideki belirtilen belirli bölümleri güncellediğinden bunu düzeltir.
+
+```C#
+    [HttpPatch("{id:int}")] //Puttan farkı putta nesneyi bir bütün olarak güncelliyoruz burada ise kısmi güncelleme yapabiliyoruz.
+        // Normalde bir array içinde tanımlanır
+        public IActionResult PartiallyUpdateOneBook([FromRoute(Name ="id")]int id, [FromBody]JsonPatchDocument<Book> bookPatch )
+        {
+            //check entity
+            var entity = ApplicationContext.Books.Find(b => b.Id.Equals(id));
+            if(entity is null)
+            {
+                return NotFound(); //404
+            }
+
+            bookPatch.ApplyTo(entity);
+            return NoContent(); //204
+        }
+```
+* 
