@@ -314,7 +314,7 @@ builder.Logging.AddFile($"{Directory.GetCurrentDirectory()}\\LogFile\\log.txt", 
 * Projeyi çalıştırdığımda otomatik olarak LogFile oluştu ve loglar oraya yazıldı. 
 
 
-# 📁 [Book](https://github.com/gulsunciftci/AspDotNetCoreWebApi/tree/main/AspDotNetCoreWebApi/Book)
+# 📁 [Book](https://github.com/gulsunciftci/AspDotNetCoreWebApi/tree/main/AspDotNetCoreWebApi/BookDemo)
 
 * Book isminde bir class oluşturdum ve propertylerini ekledim.
 
